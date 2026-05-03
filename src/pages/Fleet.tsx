@@ -268,7 +268,7 @@ export default function Fleet() {
                 key={index}
                 className={`bg-white rounded-xl p-6 hover:shadow-lg transition-all border border-gray-200 ${isRTL ? 'text-right' : 'text-center'}`}
               >
-                <div className={`flex mb-4 ${isRTL ? 'justify-end' : 'justify-center'}`}>
+                <div className={`flex mb-4 ${isRTL ? 'justify-start' : 'justify-center'}`}>
                   <industry.icon className="w-12 h-12 text-red-600" />
                 </div>
                 <p className="text-sm font-semibold text-gray-900">{t(industry.nameKey)}</p>
