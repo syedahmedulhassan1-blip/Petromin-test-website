@@ -1,66 +1,24 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#dc2626" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Petromin" />
+    <meta name="description" content="Professional car maintenance and repair services in UAE. Fast oil changes, brake services, AC checks, battery replacements, and more. 6 branches across Dubai, Sharjah, Abu Dhabi, and RAK." />
+    <link rel="manifest" href="/manifest.json" />
+    <title>Petromin Express UAE - Expert Car Care & Maintenance Services</title>
+  </head>
+  <body>
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v18.0" nonce="YOUR_NONCE"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
 
-@layer base {
-  body {
-    @apply bg-gray-50 text-gray-900;
-  }
-}
-
-/* ============================================================================
-   GLOBAL RTL FIX
-   ----------------------------------------------------------------------------
-   With dir="rtl" on the document, the browser already flips flex/grid axes.
-   The existing codebase ALSO applies manual `flex-row-reverse` and physical
-   margin/padding utilities (ml-*, mr-*, pl-*, pr-*) for RTL — that double-flips
-   the layout and pushes icons to the wrong side. The rules below neutralize
-   the manual reverses and remap physical margins to logical (start/end) ones
-   so RTL renders correctly: icon on the right, text flowing leftward.
-   ============================================================================ */
-
-[dir="rtl"] {
-  /* 1. Cancel manual flex direction reversals — the parent dir="rtl" already
-        reverses the row axis, so flex-row-reverse here puts content back where
-        LTR had it. Force normal row order; the dir attribute does the flipping. */
-  .flex-row-reverse {
-    flex-direction: row !important;
-  }
-
-  /* 2. Default text alignment.
-        Tailwind's `text-left` is physical and won't flip with dir="rtl".
-        Map left-aligned text to start-aligned (= right in RTL).
-        Same for `text-right` -> end (= left in RTL). */
-  .text-left {
-    text-align: right !important;
-  }
-  .text-right {
-    text-align: left !important;
-  }
-
-  /* 3. Margins — physical -> logical.
-        We swap the physical margin to the opposite side so visual layout flips. */
-  .ml-1 { margin-left: 0 !important; margin-right: 0.25rem !important; }
-  .ml-2 { margin-left: 0 !important; margin-right: 0.5rem !important; }
-  .ml-3 { margin-left: 0 !important; margin-right: 0.75rem !important; }
-  .ml-4 { margin-left: 0 !important; margin-right: 1rem !important; }
-  .ml-6 { margin-left: 0 !important; margin-right: 1.5rem !important; }
-  .ml-8 { margin-left: 0 !important; margin-right: 2rem !important; }
-
-  .mr-1 { margin-right: 0 !important; margin-left: 0.25rem !important; }
-  .mr-2 { margin-right: 0 !important; margin-left: 0.5rem !important; }
-  .mr-3 { margin-right: 0 !important; margin-left: 0.75rem !important; }
-  .mr-4 { margin-right: 0 !important; margin-left: 1rem !important; }
-  .mr-6 { margin-right: 0 !important; margin-left: 1.5rem !important; }
-
-  /* 4. Paddings — physical -> logical (matters for input fields with icons) */
-  .pl-3  { padding-left: 0 !important; padding-right: 0.75rem !important; }
-  .pl-4  { padding-left: 0 !important; padding-right: 1rem !important; }
-  .pl-10 { padding-left: 0 !important; padding-right: 2.5rem !important; }
-  .pl-12 { padding-left: 0 !important; padding-right: 3rem !important; }
-
-  .pr-3  { padding-right: 0 !important; padding-left: 0.75rem !important; }
-  .pr-4  { padding-right: 0 !important; padding-left: 1rem !important; }
-  .pr-10 { padding-right: 0 !important; padding-left: 2.5rem !important; }
-  .pr-12 { padding-right: 0 !important; padding-left: 3rem !important; }
-}
