@@ -11,56 +11,91 @@
 /* ============================================================================
    GLOBAL RTL FIX
    ----------------------------------------------------------------------------
-   With dir="rtl" on the document, the browser already flips flex/grid axes.
-   The existing codebase ALSO applies manual `flex-row-reverse` and physical
-   margin/padding utilities (ml-*, mr-*, pl-*, pr-*) for RTL — that double-flips
-   the layout and pushes icons to the wrong side. The rules below neutralize
-   the manual reverses and remap physical margins to logical (start/end) ones
-   so RTL renders correctly: icon on the right, text flowing leftward.
+   With dir="rtl" on the document, the browser flips flex/grid axes automatically.
+   But several Tailwind utilities use *physical* (left/right) values that do NOT
+   flip — text-left, ml-*, pl-*, left-*, right-*, etc. We remap them here so the
+   layout becomes truly RTL-aware: icon on the right, text right-aligned,
+   absolute positioning mirrored.
    ============================================================================ */
 
 [dir="rtl"] {
-  /* 1. Cancel manual flex direction reversals — the parent dir="rtl" already
-        reverses the row axis, so flex-row-reverse here puts content back where
-        LTR had it. Force normal row order; the dir attribute does the flipping. */
+  /* ---------- 1. TEXT ALIGNMENT ---------- */
+
+  /* Default: in Arabic, text without an explicit alignment class should flow
+     right-to-left starting from the right edge. Browsers already do this for
+     pure text, but block elements (divs, h1-h6, p) inherit `text-align: start`
+     correctly — so we only need to flip explicit utilities. */
+  .text-left  { text-align: right !important; }
+  .text-right { text-align: left  !important; }
+  /* text-center stays centered — no change needed. */
+
+
+  /* ---------- 2. CANCEL MANUAL flex-row-reverse ---------- */
+  /* The dir="rtl" attribute already reverses the flex-row axis. Manual
+     flex-row-reverse on top of that = double flip = back to LTR layout. */
   .flex-row-reverse {
     flex-direction: row !important;
   }
 
-  /* 2. Default text alignment.
-        Tailwind's `text-left` is physical and won't flip with dir="rtl".
-        Map left-aligned text to start-aligned (= right in RTL).
-        Same for `text-right` -> end (= left in RTL). */
-  .text-left {
-    text-align: right !important;
-  }
-  .text-right {
-    text-align: left !important;
-  }
 
-  /* 3. Margins — physical -> logical.
-        We swap the physical margin to the opposite side so visual layout flips. */
+  /* ---------- 3. MARGINS: physical -> mirrored ---------- */
   .ml-1 { margin-left: 0 !important; margin-right: 0.25rem !important; }
-  .ml-2 { margin-left: 0 !important; margin-right: 0.5rem !important; }
+  .ml-2 { margin-left: 0 !important; margin-right: 0.5rem  !important; }
   .ml-3 { margin-left: 0 !important; margin-right: 0.75rem !important; }
-  .ml-4 { margin-left: 0 !important; margin-right: 1rem !important; }
-  .ml-6 { margin-left: 0 !important; margin-right: 1.5rem !important; }
-  .ml-8 { margin-left: 0 !important; margin-right: 2rem !important; }
+  .ml-4 { margin-left: 0 !important; margin-right: 1rem    !important; }
+  .ml-6 { margin-left: 0 !important; margin-right: 1.5rem  !important; }
+  .ml-8 { margin-left: 0 !important; margin-right: 2rem    !important; }
 
   .mr-1 { margin-right: 0 !important; margin-left: 0.25rem !important; }
-  .mr-2 { margin-right: 0 !important; margin-left: 0.5rem !important; }
+  .mr-2 { margin-right: 0 !important; margin-left: 0.5rem  !important; }
   .mr-3 { margin-right: 0 !important; margin-left: 0.75rem !important; }
-  .mr-4 { margin-right: 0 !important; margin-left: 1rem !important; }
-  .mr-6 { margin-right: 0 !important; margin-left: 1.5rem !important; }
+  .mr-4 { margin-right: 0 !important; margin-left: 1rem    !important; }
+  .mr-6 { margin-right: 0 !important; margin-left: 1.5rem  !important; }
 
-  /* 4. Paddings — physical -> logical (matters for input fields with icons) */
+
+  /* ---------- 4. PADDINGS: physical -> mirrored ---------- */
+  /* Important for input fields with absolute icons. */
   .pl-3  { padding-left: 0 !important; padding-right: 0.75rem !important; }
-  .pl-4  { padding-left: 0 !important; padding-right: 1rem !important; }
-  .pl-10 { padding-left: 0 !important; padding-right: 2.5rem !important; }
-  .pl-12 { padding-left: 0 !important; padding-right: 3rem !important; }
+  .pl-4  { padding-left: 0 !important; padding-right: 1rem    !important; }
+  .pl-10 { padding-left: 0 !important; padding-right: 2.5rem  !important; }
+  .pl-12 { padding-left: 0 !important; padding-right: 3rem    !important; }
 
   .pr-3  { padding-right: 0 !important; padding-left: 0.75rem !important; }
-  .pr-4  { padding-right: 0 !important; padding-left: 1rem !important; }
-  .pr-10 { padding-right: 0 !important; padding-left: 2.5rem !important; }
-  .pr-12 { padding-right: 0 !important; padding-left: 3rem !important; }
+  .pr-4  { padding-right: 0 !important; padding-left: 1rem    !important; }
+  .pr-10 { padding-right: 0 !important; padding-left: 2.5rem  !important; }
+  .pr-12 { padding-right: 0 !important; padding-left: 3rem    !important; }
+
+
+  /* ---------- 5. ABSOLUTE POSITIONING: mirror left <-> right ---------- */
+  /* Tailwind's left-* and right-* utilities are physical and do NOT flip with
+     dir="rtl". Absolutely-positioned icons (badges, ratings, close buttons)
+     stay stuck on the LTR side unless we mirror them here. */
+
+  .left-0  { left: auto !important; right: 0     !important; }
+  .left-1  { left: auto !important; right: 0.25rem !important; }
+  .left-2  { left: auto !important; right: 0.5rem  !important; }
+  .left-3  { left: auto !important; right: 0.75rem !important; }
+  .left-4  { left: auto !important; right: 1rem    !important; }
+  .left-6  { left: auto !important; right: 1.5rem  !important; }
+
+  .right-0  { right: auto !important; left: 0     !important; }
+  .right-2  { right: auto !important; left: 0.5rem  !important; }
+  .right-3  { right: auto !important; left: 0.75rem !important; }
+  .right-6  { right: auto !important; left: 1.5rem  !important; }
+  .right-10 { right: auto !important; left: 2.5rem  !important; }
+
+  /* Negative offsets used for badges that hang off corners */
+  .-left-1  { left: auto !important; right: -0.25rem !important; }
+  .-left-6  { left: auto !important; right: -1.5rem  !important; }
+  .-right-1 { right: auto !important; left: -0.25rem !important; }
+  .-ml-2    { margin-left: 0 !important; margin-right: -0.5rem !important; }
+  .-ml-4    { margin-left: 0 !important; margin-right: -1rem   !important; }
+  .-mr-2    { margin-right: 0 !important; margin-left: -0.5rem !important; }
+  .-mr-4    { margin-right: 0 !important; margin-left: -1rem   !important; }
+
+
+  /* ---------- 6. FLEX justify-start / items-start ---------- */
+  /* These ARE direction-aware via flexbox under dir="rtl" automatically;
+     no override needed. Listed here as a comment for clarity. */
+  /* .justify-start, .items-start — already correct under flex+rtl */
 }
