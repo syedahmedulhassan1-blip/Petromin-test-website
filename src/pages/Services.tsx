@@ -291,7 +291,7 @@ export default function Services() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className={isRTL ? 'text-right' : 'text-center'}>
-              <div className={`flex mb-4 ${isRTL ? 'justify-end' : 'justify-center'}`}>
+              <div className={`flex mb-4 ${isRTL ? 'justify-start' : 'justify-center'}`}>
                 <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center">
                   <Zap className="w-8 h-8 text-red-600" />
                 </div>
@@ -305,7 +305,7 @@ export default function Services() {
             </div>
 
             <div className={isRTL ? 'text-right' : 'text-center'}>
-              <div className={`flex mb-4 ${isRTL ? 'justify-end' : 'justify-center'}`}>
+              <div className={`flex mb-4 ${isRTL ? 'justify-start' : 'justify-center'}`}>
                 <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center">
                   <Shield className="w-8 h-8 text-red-600" />
                 </div>
@@ -319,7 +319,7 @@ export default function Services() {
             </div>
 
             <div className={isRTL ? 'text-right' : 'text-center'}>
-              <div className={`flex mb-4 ${isRTL ? 'justify-end' : 'justify-center'}`}>
+              <div className={`flex mb-4 ${isRTL ? 'justify-start' : 'justify-center'}`}>
                 <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center">
                   <Banknote className="w-8 h-8 text-red-600" />
                 </div>
@@ -333,7 +333,7 @@ export default function Services() {
             </div>
 
             <div className={isRTL ? 'text-right' : 'text-center'}>
-              <div className={`flex mb-4 ${isRTL ? 'justify-end' : 'justify-center'}`}>
+              <div className={`flex mb-4 ${isRTL ? 'justify-start' : 'justify-center'}`}>
                 <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center">
                   <UserCheck className="w-8 h-8 text-red-600" />
                 </div>
