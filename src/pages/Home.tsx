@@ -226,7 +226,7 @@ export default function Home() {
                 key={index}
                 className={`bg-white rounded-xl p-8 hover:shadow-lg transition-all border border-gray-200 hover:border-red-300 ${isRTL ? 'text-right' : 'text-center'}`}
               >
-                <div className={`flex mb-4 ${isRTL ? 'justify-end' : 'justify-center'}`}>
+                <div className={`flex mb-4 ${isRTL ? 'justify-start' : 'justify-center'}`}>
                   <service.icon className="w-12 h-12 text-red-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900">
