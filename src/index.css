@@ -9,93 +9,118 @@
 }
 
 /* ============================================================================
-   GLOBAL RTL FIX
+   GLOBAL RTL FIX (Arabic)
    ----------------------------------------------------------------------------
-   With dir="rtl" on the document, the browser flips flex/grid axes automatically.
-   But several Tailwind utilities use *physical* (left/right) values that do NOT
-   flip — text-left, ml-*, pl-*, left-*, right-*, etc. We remap them here so the
-   layout becomes truly RTL-aware: icon on the right, text right-aligned,
-   absolute positioning mirrored.
+   Strategy: With dir="rtl" on the document, the browser flips flex/grid axes
+   automatically. Tailwind utilities that use *physical* left/right values
+   (text-left, ml-*, pl-*, left-*, right-*, flex-row-reverse) do NOT flip,
+   so we remap them here. We also force right-alignment as the default for
+   all text inside RTL containers — that way headings, paragraphs, and list
+   items always start from the right edge unless the developer explicitly
+   asked for centered or left.
    ============================================================================ */
 
 [dir="rtl"] {
-  /* ---------- 1. TEXT ALIGNMENT ---------- */
+  /* ---------- 1. DEFAULT TEXT ALIGNMENT ---------- */
+  /* Force right-align as the default for typical content blocks in RTL.
+     Explicit text-center / text-right / mx-auto on the element still wins
+     because of CSS specificity (those are applied with higher specificity
+     by being on the same element). */
+  text-align: right;
+}
 
-  /* Default: in Arabic, text without an explicit alignment class should flow
-     right-to-left starting from the right edge. Browsers already do this for
-     pure text, but block elements (divs, h1-h6, p) inherit `text-align: start`
-     correctly — so we only need to flip explicit utilities. */
-  .text-left  { text-align: right !important; }
-  .text-right { text-align: left  !important; }
-  /* text-center stays centered — no change needed. */
+/* Specific selectors so we beat Tailwind's utility specificity where needed */
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] h4,
+[dir="rtl"] h5,
+[dir="rtl"] h6,
+[dir="rtl"] p,
+[dir="rtl"] li,
+[dir="rtl"] span,
+[dir="rtl"] a,
+[dir="rtl"] div {
+  text-align: inherit;
+}
 
+/* But: text-center MUST always stay centered (used for hero titles, stat numbers, etc.) */
+[dir="rtl"] .text-center {
+  text-align: center !important;
+}
 
-  /* ---------- 2. CANCEL MANUAL flex-row-reverse ---------- */
-  /* The dir="rtl" attribute already reverses the flex-row axis. Manual
-     flex-row-reverse on top of that = double flip = back to LTR layout. */
-  .flex-row-reverse {
-    flex-direction: row !important;
-  }
+/* And: text-left in code = "logical start" in RTL = right. Force right. */
+[dir="rtl"] .text-left {
+  text-align: right !important;
+}
 
-
-  /* ---------- 3. MARGINS: physical -> mirrored ---------- */
-  .ml-1 { margin-left: 0 !important; margin-right: 0.25rem !important; }
-  .ml-2 { margin-left: 0 !important; margin-right: 0.5rem  !important; }
-  .ml-3 { margin-left: 0 !important; margin-right: 0.75rem !important; }
-  .ml-4 { margin-left: 0 !important; margin-right: 1rem    !important; }
-  .ml-6 { margin-left: 0 !important; margin-right: 1.5rem  !important; }
-  .ml-8 { margin-left: 0 !important; margin-right: 2rem    !important; }
-
-  .mr-1 { margin-right: 0 !important; margin-left: 0.25rem !important; }
-  .mr-2 { margin-right: 0 !important; margin-left: 0.5rem  !important; }
-  .mr-3 { margin-right: 0 !important; margin-left: 0.75rem !important; }
-  .mr-4 { margin-right: 0 !important; margin-left: 1rem    !important; }
-  .mr-6 { margin-right: 0 !important; margin-left: 1.5rem  !important; }
-
-
-  /* ---------- 4. PADDINGS: physical -> mirrored ---------- */
-  /* Important for input fields with absolute icons. */
-  .pl-3  { padding-left: 0 !important; padding-right: 0.75rem !important; }
-  .pl-4  { padding-left: 0 !important; padding-right: 1rem    !important; }
-  .pl-10 { padding-left: 0 !important; padding-right: 2.5rem  !important; }
-  .pl-12 { padding-left: 0 !important; padding-right: 3rem    !important; }
-
-  .pr-3  { padding-right: 0 !important; padding-left: 0.75rem !important; }
-  .pr-4  { padding-right: 0 !important; padding-left: 1rem    !important; }
-  .pr-10 { padding-right: 0 !important; padding-left: 2.5rem  !important; }
-  .pr-12 { padding-right: 0 !important; padding-left: 3rem    !important; }
+/* text-right is already physically right, which is what we want. Don't override it.
+   (Earlier version incorrectly flipped this to left — that broke stat cards.) */
 
 
-  /* ---------- 5. ABSOLUTE POSITIONING: mirror left <-> right ---------- */
-  /* Tailwind's left-* and right-* utilities are physical and do NOT flip with
-     dir="rtl". Absolutely-positioned icons (badges, ratings, close buttons)
-     stay stuck on the LTR side unless we mirror them here. */
-
-  .left-0  { left: auto !important; right: 0     !important; }
-  .left-1  { left: auto !important; right: 0.25rem !important; }
-  .left-2  { left: auto !important; right: 0.5rem  !important; }
-  .left-3  { left: auto !important; right: 0.75rem !important; }
-  .left-4  { left: auto !important; right: 1rem    !important; }
-  .left-6  { left: auto !important; right: 1.5rem  !important; }
-
-  .right-0  { right: auto !important; left: 0     !important; }
-  .right-2  { right: auto !important; left: 0.5rem  !important; }
-  .right-3  { right: auto !important; left: 0.75rem !important; }
-  .right-6  { right: auto !important; left: 1.5rem  !important; }
-  .right-10 { right: auto !important; left: 2.5rem  !important; }
-
-  /* Negative offsets used for badges that hang off corners */
-  .-left-1  { left: auto !important; right: -0.25rem !important; }
-  .-left-6  { left: auto !important; right: -1.5rem  !important; }
-  .-right-1 { right: auto !important; left: -0.25rem !important; }
-  .-ml-2    { margin-left: 0 !important; margin-right: -0.5rem !important; }
-  .-ml-4    { margin-left: 0 !important; margin-right: -1rem   !important; }
-  .-mr-2    { margin-right: 0 !important; margin-left: -0.5rem !important; }
-  .-mr-4    { margin-right: 0 !important; margin-left: -1rem   !important; }
+/* ---------- 2. CANCEL MANUAL flex-row-reverse ---------- */
+/* The dir="rtl" attribute already reverses the flex-row axis at the browser
+   level. Manual flex-row-reverse on top of that = double flip = back to LTR. */
+[dir="rtl"] .flex-row-reverse {
+  flex-direction: row !important;
+}
 
 
-  /* ---------- 6. FLEX justify-start / items-start ---------- */
-  /* These ARE direction-aware via flexbox under dir="rtl" automatically;
-     no override needed. Listed here as a comment for clarity. */
-  /* .justify-start, .items-start — already correct under flex+rtl */
+/* ---------- 3. MARGINS: physical -> mirrored ---------- */
+[dir="rtl"] .ml-1 { margin-left: 0 !important; margin-right: 0.25rem !important; }
+[dir="rtl"] .ml-2 { margin-left: 0 !important; margin-right: 0.5rem  !important; }
+[dir="rtl"] .ml-3 { margin-left: 0 !important; margin-right: 0.75rem !important; }
+[dir="rtl"] .ml-4 { margin-left: 0 !important; margin-right: 1rem    !important; }
+[dir="rtl"] .ml-6 { margin-left: 0 !important; margin-right: 1.5rem  !important; }
+[dir="rtl"] .ml-8 { margin-left: 0 !important; margin-right: 2rem    !important; }
+
+[dir="rtl"] .mr-1 { margin-right: 0 !important; margin-left: 0.25rem !important; }
+[dir="rtl"] .mr-2 { margin-right: 0 !important; margin-left: 0.5rem  !important; }
+[dir="rtl"] .mr-3 { margin-right: 0 !important; margin-left: 0.75rem !important; }
+[dir="rtl"] .mr-4 { margin-right: 0 !important; margin-left: 1rem    !important; }
+[dir="rtl"] .mr-6 { margin-right: 0 !important; margin-left: 1.5rem  !important; }
+
+
+/* ---------- 4. PADDINGS: physical -> mirrored ---------- */
+/* Critical for input fields with absolutely-positioned icons. */
+[dir="rtl"] .pl-3  { padding-left: 0 !important; padding-right: 0.75rem !important; }
+[dir="rtl"] .pl-4  { padding-left: 0 !important; padding-right: 1rem    !important; }
+[dir="rtl"] .pl-10 { padding-left: 0 !important; padding-right: 2.5rem  !important; }
+[dir="rtl"] .pl-12 { padding-left: 0 !important; padding-right: 3rem    !important; }
+
+[dir="rtl"] .pr-3  { padding-right: 0 !important; padding-left: 0.75rem !important; }
+[dir="rtl"] .pr-4  { padding-right: 0 !important; padding-left: 1rem    !important; }
+[dir="rtl"] .pr-10 { padding-right: 0 !important; padding-left: 2.5rem  !important; }
+[dir="rtl"] .pr-12 { padding-right: 0 !important; padding-left: 3rem    !important; }
+
+
+/* ---------- 5. ABSOLUTE POSITIONING: mirror left <-> right ---------- */
+[dir="rtl"] .left-0  { left: auto !important; right: 0       !important; }
+[dir="rtl"] .left-1  { left: auto !important; right: 0.25rem !important; }
+[dir="rtl"] .left-2  { left: auto !important; right: 0.5rem  !important; }
+[dir="rtl"] .left-3  { left: auto !important; right: 0.75rem !important; }
+[dir="rtl"] .left-4  { left: auto !important; right: 1rem    !important; }
+[dir="rtl"] .left-6  { left: auto !important; right: 1.5rem  !important; }
+
+[dir="rtl"] .right-0  { right: auto !important; left: 0       !important; }
+[dir="rtl"] .right-2  { right: auto !important; left: 0.5rem  !important; }
+[dir="rtl"] .right-3  { right: auto !important; left: 0.75rem !important; }
+[dir="rtl"] .right-6  { right: auto !important; left: 1.5rem  !important; }
+[dir="rtl"] .right-10 { right: auto !important; left: 2.5rem  !important; }
+
+/* Negative offsets used for badges that hang off corners */
+[dir="rtl"] .-left-1  { left: auto !important; right: -0.25rem !important; }
+[dir="rtl"] .-left-6  { left: auto !important; right: -1.5rem  !important; }
+[dir="rtl"] .-right-1 { right: auto !important; left: -0.25rem !important; }
+[dir="rtl"] .-ml-2    { margin-left: 0 !important; margin-right: -0.5rem !important; }
+[dir="rtl"] .-ml-4    { margin-left: 0 !important; margin-right: -1rem   !important; }
+[dir="rtl"] .-mr-2    { margin-right: 0 !important; margin-left: -0.5rem !important; }
+[dir="rtl"] .-mr-4    { margin-right: 0 !important; margin-left: -1rem   !important; }
+
+
+/* ---------- 6. PHONE / EMAIL / URLs always render LTR ---------- */
+/* Anything explicitly marked dir="ltr" stays LTR (digits don't reverse) */
+[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
 }
