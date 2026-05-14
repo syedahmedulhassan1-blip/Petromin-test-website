@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { Wrench, Users, Droplet, ShieldCheck, Car, Battery, Settings, MessageCircle, Truck } from 'lucide-react';
+import { Wrench, Droplet, ShieldCheck, Car, Battery, Settings, MessageCircle, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import FacebookFeed from '../components/FacebookFeed';
@@ -7,21 +6,13 @@ import InstagramFeed from '../components/InstagramFeed';
 import LinkedInFeed from '../components/LinkedInFeed';
 import LiveCarCounter from '../components/LiveCarCounter';
 import HeroSlideshow from '../components/HeroSlideshow';
-import Carousel from '../components/Carousel';
 import GoogleReviews from '../components/GoogleReviews';
 import { openWhatsApp, WhatsAppMessages } from '../utils/whatsapp';
 import { useLanguage } from '../contexts/LanguageContext';
-import { fetchTestimonials, type Testimonial } from '../lib/cms';
 
 export default function Home() {
   const { t, language } = useLanguage();
   const isRTL = language === 'ar';
-
-  const [cmsTestimonials, setCmsTestimonials] = useState<Testimonial[]>([]);
-
-  useEffect(() => {
-    fetchTestimonials().then(setCmsTestimonials).catch(() => setCmsTestimonials([]));
-  }, []);
 
   const features = [
     {
@@ -52,44 +43,6 @@ export default function Home() {
     { name: t('services.ac'), icon: Battery },
     { name: t('services.tire'), icon: Settings },
   ];
-
-  // Use CMS testimonials if available, otherwise fall back to hardcoded translation keys
-  const fallbackTestimonials = [
-    {
-      text: t('testimonials.1.text'),
-      author: t('testimonials.1.author'),
-      location: t('testimonials.1.location'),
-    },
-    {
-      text: t('testimonials.2.text'),
-      author: t('testimonials.2.author'),
-      location: t('testimonials.2.location'),
-    },
-    {
-      text: t('testimonials.3.text'),
-      author: t('testimonials.3.author'),
-      location: t('testimonials.3.location'),
-    },
-    {
-      text: t('testimonials.4.text'),
-      author: t('testimonials.4.author'),
-      location: t('testimonials.4.location'),
-    },
-    {
-      text: t('testimonials.5.text'),
-      author: t('testimonials.5.author'),
-      location: t('testimonials.5.location'),
-    },
-  ];
-
-  const testimonials =
-    cmsTestimonials.length > 0
-      ? cmsTestimonials.map((t) => ({
-          text: (isRTL ? t.text_ar : t.text_en) || '',
-          author: (isRTL ? t.author_ar : t.author_en) || '',
-          location: (isRTL ? t.location_ar : t.location_en) || '',
-        }))
-      : fallbackTestimonials;
 
   return (
     <>
@@ -261,55 +214,6 @@ export default function Home() {
             >
               {t('services.view')}
             </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              {t('testimonials.title')}
-            </h2>
-            <p className="text-xl text-gray-600">
-              {t('testimonials.subtitle')}
-            </p>
-          </div>
-
-          <div className="max-w-6xl mx-auto px-4">
-            <Carousel
-              itemsPerView={{ base: 1, md: 2, lg: 3 }}
-              autoPlay
-              autoPlayInterval={6000}
-              showArrows
-              showDots
-              gap={24}
-            >
-              {testimonials.map((testimonial, index) => (
-                <div
-                  key={index}
-                  className={`bg-gray-50 rounded-xl p-8 border border-gray-200 hover:shadow-lg transition-shadow h-full ${isRTL ? 'text-right' : ''}`}
-                >
-                  <div className={`flex items-center gap-1 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-yellow-400 text-xl">★</span>
-                    ))}
-                  </div>
-                  <p className="text-gray-700 text-lg mb-6 italic">
-                    "{testimonial.text}"
-                  </p>
-                  <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Users className="w-6 h-6 text-red-600" />
-                    </div>
-                    <div className={isRTL ? 'text-right' : ''}>
-                      <p className="font-semibold text-gray-900">{testimonial.author}</p>
-                      <p className="text-gray-600 text-sm">{testimonial.location}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </Carousel>
           </div>
         </div>
       </section>
