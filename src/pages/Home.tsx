@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Wrench, Users, Droplet, ShieldCheck, Car, Battery, Settings, MessageCircle, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -10,10 +11,17 @@ import Carousel from '../components/Carousel';
 import GoogleReviews from '../components/GoogleReviews';
 import { openWhatsApp, WhatsAppMessages } from '../utils/whatsapp';
 import { useLanguage } from '../contexts/LanguageContext';
+import { fetchTestimonials, type Testimonial } from '../lib/cms';
 
 export default function Home() {
   const { t, language } = useLanguage();
   const isRTL = language === 'ar';
+
+  const [cmsTestimonials, setCmsTestimonials] = useState<Testimonial[]>([]);
+
+  useEffect(() => {
+    fetchTestimonials().then(setCmsTestimonials).catch(() => setCmsTestimonials([]));
+  }, []);
 
   const features = [
     {
@@ -45,7 +53,8 @@ export default function Home() {
     { name: t('services.tire'), icon: Settings },
   ];
 
-  const testimonials = [
+  // Use CMS testimonials if available, otherwise fall back to hardcoded translation keys
+  const fallbackTestimonials = [
     {
       text: t('testimonials.1.text'),
       author: t('testimonials.1.author'),
@@ -72,6 +81,15 @@ export default function Home() {
       location: t('testimonials.5.location'),
     },
   ];
+
+  const testimonials =
+    cmsTestimonials.length > 0
+      ? cmsTestimonials.map((t) => ({
+          text: (isRTL ? t.text_ar : t.text_en) || '',
+          author: (isRTL ? t.author_ar : t.author_en) || '',
+          location: (isRTL ? t.location_ar : t.location_en) || '',
+        }))
+      : fallbackTestimonials;
 
   return (
     <>
