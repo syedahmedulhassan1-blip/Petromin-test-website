@@ -1,154 +1,41 @@
-import { Droplet, Wind, Battery, Settings, Disc, Car, Lightbulb, Wrench, MessageCircle, Check, Zap, Shield, Banknote, UserCheck, Star, Truck } from 'lucide-react';
+// ============================================================================
+// Services — public page
+// ----------------------------------------------------------------------------
+// Reads services from the Supabase `services` table (managed via /analytics CMS).
+// Static "promise" section remains hardcoded below the dynamic services list.
+// ============================================================================
+
+import { useState, useEffect } from 'react';
+import {
+  Droplet, Wind, Battery, Settings, Disc, Car, Lightbulb, Wrench,
+  MessageCircle, Check, Zap, Shield, Banknote, UserCheck, Star, Truck,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { openWhatsApp, WhatsAppMessages } from '../utils/whatsapp';
 import { useLanguage } from '../contexts/LanguageContext';
 import Carousel from '../components/Carousel';
+import { fetchServices, type Service } from '../lib/cms';
+
+// Map of icon names (string) to lucide icon components
+const ICON_MAP: Record<string, typeof Wrench> = {
+  Wrench, Droplet, Battery, Settings, Wind, Disc,
+  Car, Lightbulb, Zap, Shield, Truck,
+};
 
 export default function Services() {
   const { t, language } = useLanguage();
   const isRTL = language === 'ar';
-  const services = [
-    {
-      icon: Droplet,
-      titleKey: 'service.oil.title',
-      color: 'bg-blue-100 text-blue-600',
-      image: '/oil_chaneg.jpg',
-      rating: 4.9,
-      reviews: 1243,
-      featureKeys: [
-        'service.oil.feature1',
-        'service.oil.feature2',
-        'service.oil.feature3',
-        'service.oil.feature4',
-      ],
-    },
-    {
-      icon: Droplet,
-      titleKey: 'service.fluids.title',
-      color: 'bg-cyan-100 text-cyan-600',
-      image: '/fluids.webp',
-      rating: 4.8,
-      reviews: 987,
-      featureKeys: [
-        'service.fluids.feature1',
-        'service.fluids.feature2',
-        'service.fluids.feature3',
-        'service.fluids.feature4',
-      ],
-    },
-    {
-      icon: Settings,
-      titleKey: 'service.wheel.title',
-      color: 'bg-gray-700 text-white',
-      image: '/unnamed_(1).jpg',
-      rating: 4.9,
-      reviews: 1156,
-      featureKeys: [
-        'service.wheel.feature1',
-        'service.wheel.feature2',
-        'service.wheel.feature3',
-        'service.wheel.feature4',
-      ],
-    },
-    {
-      icon: Wind,
-      titleKey: 'service.ac.title',
-      color: 'bg-sky-100 text-sky-600',
-      image: '/ac.jpg',
-      rating: 4.9,
-      reviews: 892,
-      featureKeys: [
-        'service.ac.feature1',
-        'service.ac.feature2',
-        'service.ac.feature3',
-        'service.ac.feature4',
-      ],
-    },
-    {
-      icon: Battery,
-      titleKey: 'service.battery.title',
-      color: 'bg-yellow-100 text-yellow-600',
-      image: '/battery.webp',
-      rating: 4.9,
-      reviews: 1425,
-      featureKeys: [
-        'service.battery.feature1',
-        'service.battery.feature2',
-        'service.battery.feature3',
-        'service.battery.feature4',
-      ],
-    },
-    {
-      icon: Lightbulb,
-      titleKey: 'service.wipers.title',
-      color: 'bg-orange-100 text-orange-600',
-      image: '/360_f_245920161_c3to1zjlmu2q5ky65bvllvzrnp01x9fa.jpg',
-      rating: 4.8,
-      reviews: 743,
-      featureKeys: [
-        'service.wipers.feature1',
-        'service.wipers.feature2',
-        'service.wipers.feature3',
-        'service.wipers.feature4',
-      ],
-    },
-    {
-      icon: Disc,
-      titleKey: 'service.brake.title',
-      color: 'bg-red-100 text-red-600',
-      image: '/brake.jpg',
-      rating: 4.9,
-      reviews: 1567,
-      featureKeys: [
-        'service.brake.feature1',
-        'service.brake.feature2',
-        'service.brake.feature3',
-        'service.brake.feature4',
-      ],
-    },
-    {
-      icon: Wrench,
-      titleKey: 'service.transmission.title',
-      color: 'bg-teal-100 text-teal-600',
-      image: '/depositphotos_32819239-stock-photo-gearbox-and-clutch-cross-section.jpg',
-      rating: 4.7,
-      reviews: 678,
-      featureKeys: [
-        'service.transmission.feature1',
-        'service.transmission.feature2',
-        'service.transmission.feature3',
-        'service.transmission.feature4',
-      ],
-    },
-    {
-      icon: Settings,
-      titleKey: 'service.tuning.title',
-      color: 'bg-slate-100 text-slate-600',
-      image: '/serviceman-laptop-checks-engine-car-600nw-2593113533.webp',
-      rating: 4.8,
-      reviews: 1034,
-      featureKeys: [
-        'service.tuning.feature1',
-        'service.tuning.feature2',
-        'service.tuning.feature3',
-        'service.tuning.feature4',
-      ],
-    },
-    {
-      icon: Car,
-      titleKey: 'service.wash.title',
-      color: 'bg-emerald-100 text-emerald-600',
-      image: '/woman-washing-her-car-selfservice-600nw-1861269733.webp',
-      rating: 4.9,
-      reviews: 2134,
-      featureKeys: [
-        'service.wash.feature1',
-        'service.wash.feature2',
-        'service.wash.feature3',
-        'service.wash.feature4',
-      ],
-    },
-  ];
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchServices()
+      .then(setServices)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const pickText = (en: string | null | undefined, ar: string | null | undefined) =>
+    (isRTL ? ar : en) ?? '';
 
   return (
     <div className="pt-32" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -176,70 +63,89 @@ export default function Services() {
             </p>
           </div>
 
-          <Carousel
-            itemsPerView={{ base: 1, md: 2, lg: 3 }}
-            autoPlay
-            autoPlayInterval={6000}
-            showArrows
-            showDots
-            gap={32}
-          >
-            {services.map((service, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl transition-all hover:-translate-y-1 h-full flex flex-col"
-                dir={isRTL ? 'rtl' : 'ltr'}
-              >
-                <div className="relative h-48 bg-gray-100 overflow-hidden">
-                  <img
-                    src={service.image}
-                    alt={t(service.titleKey)}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+          {loading ? (
+            <div className="text-center py-20 text-gray-500">Loading services…</div>
+          ) : services.length === 0 ? (
+            <div className="text-center py-20 text-gray-500">
+              No services published yet.
+            </div>
+          ) : (
+            <Carousel
+              itemsPerView={{ base: 1, md: 2, lg: 3 }}
+              autoPlay
+              autoPlayInterval={6000}
+              showArrows
+              showDots
+              gap={32}
+            >
+              {services.map((service) => {
+                const title = pickText(service.title_en, service.title_ar);
+                const features = (isRTL ? service.features_ar : service.features_en) ?? [];
+                const Icon = ICON_MAP[service.icon_name] ?? Wrench;
+                const reviews = service.reviews_count ?? 0;
+                const rating = service.rating ?? 0;
 
-                  <div className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} bg-gradient-to-br from-amber-400 to-orange-500 text-white px-3 py-2 rounded-lg shadow-lg backdrop-blur-sm`}>
-                    <div className={`flex items-center gap-1.5 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                      <Star className="w-4 h-4 fill-white" />
-                      <span className="font-bold text-sm">{service.rating}</span>
+                return (
+                  <div
+                    key={service.id}
+                    className="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl transition-all hover:-translate-y-1 h-full flex flex-col"
+                    dir={isRTL ? 'rtl' : 'ltr'}
+                  >
+                    <div className="relative h-48 bg-gray-100 overflow-hidden">
+                      {service.image_url && (
+                        <img
+                          src={service.image_url}
+                          alt={title}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+
+                      {reviews > 0 && (
+                        <div className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} bg-gradient-to-br from-amber-400 to-orange-500 text-white px-3 py-2 rounded-lg shadow-lg backdrop-blur-sm`}>
+                          <div className={`flex items-center gap-1.5 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                            <Star className="w-4 h-4 fill-white" />
+                            <span className="font-bold text-sm">{rating}</span>
+                          </div>
+                          <div className="text-[10px] text-white/90 font-medium mt-0.5">
+                            {reviews.toLocaleString()} {t('services.reviews')}
+                          </div>
+                        </div>
+                      )}
+
+                      <Icon className={`w-12 h-12 text-white absolute bottom-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] ${isRTL ? 'right-6' : 'left-1/2 transform -translate-x-1/2'}`} />
                     </div>
-                    <div className="text-[10px] text-white/90 font-medium mt-0.5">
-                      {service.reviews.toLocaleString()} {t('services.reviews')}
+                    <div className={`p-6 flex-1 flex flex-col ${isRTL ? 'text-right' : 'text-left'}`}>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                        {title}
+                      </h3>
+                      <ul className="space-y-3 flex-1">
+                        {features.map((feature, idx) => (
+                          <li key={idx} className={`flex items-start gap-3 ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}>
+                            <Check className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                            <span className="text-gray-700">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <button
+                        onClick={() =>
+                          openWhatsApp(
+                            `Hello! I would like to *Book ${title}* at Petromin Express. Could you please share availability and pricing?`,
+                            { source: `Services Card - ${title}` }
+                          )
+                        }
+                        className={`mt-6 w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+                      >
+                        <MessageCircle className="w-5 h-5" />
+                        {t('services.book.now')}
+                      </button>
                     </div>
                   </div>
-
-                  <service.icon className={`w-12 h-12 text-white absolute bottom-6 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] ${isRTL ? 'right-6' : 'left-1/2 transform -translate-x-1/2'}`} />
-                </div>
-                <div className={`p-6 flex-1 flex flex-col ${isRTL ? 'text-right' : 'text-left'}`}>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    {t(service.titleKey)}
-                  </h3>
-                  <ul className="space-y-3 flex-1">
-                    {service.featureKeys.map((featureKey, idx) => (
-                      <li key={idx} className={`flex items-start gap-3 ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                        <Check className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700">{t(featureKey)}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Book Now WhatsApp button — added per audit */}
-                  <button
-                    onClick={() =>
-                      openWhatsApp(
-                        `Hello! I would like to *Book ${t(service.titleKey)}* at Petromin Express. Could you please share availability and pricing?`,
-                        { source: `Services Card - ${t(service.titleKey)}` }
-                      )
-                    }
-                    className={`mt-6 w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
-                  >
-                    <MessageCircle className="w-5 h-5" />
-                    {t('services.book.now')}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </Carousel>
+                );
+              })}
+            </Carousel>
+          )}
         </div>
       </section>
 
